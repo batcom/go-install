@@ -62,6 +62,8 @@ setup_env(){
         profile_path="/etc/profile"
     elif [[ -e ~/.zshrc ]];then
         profile_path="$HOME/.zprofile"
+    elif [[ -e ~/.bashrc ]];then
+        profile_path="$HOME/.bashrc"
     fi
     if [[ $sudo == "" && -z `echo $GOPATH` ]];then
         while :
@@ -137,6 +139,9 @@ install_go(){
             install_version=""
             if [[ $can_google == 0 ]];then
                 install_version=`curl -s --connect-timeout 15 -H 'Cache-Control: no-cache' https://go.dev/dl/|grep -w downloadBox|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
+                if [[ -z $install_version ]];then
+                    install_version=`curl -s --connect-timeout 15 -H 'Cache-Control: no-cache' https://mirrors.aliyun.com/golang/ |grep '>go'|grep src|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|sort -n -r -k 2 -t .|head -n 1`
+                fi
             else
                 install_version=`curl -s --connect-timeout 15 -H 'Cache-Control: no-cache' https://github.com/golang/go/tags|grep releases/tag|grep -v rc|grep -v beta|grep -oE '[0-9]+\.[0-9]+\.?[0-9]*'|head -n 1`
             fi
@@ -181,16 +186,16 @@ install_go(){
 install_updater(){
     if [[ $os == "Linux" ]];then
         if [[ ! -e /usr/local/bin/goupdate || -z `cat /usr/local/bin/goupdate|grep '$@'` ]];then
-            echo 'source <(curl -L https://go-install.netlify.app/install.sh) $@' > /usr/local/bin/goupdate
-            chmod +x /usr/local/bin/goupdate
+            $sudo echo 'source <(curl -L https://go-install.netlify.app/install.sh) $@' > /usr/local/go/bin/goupdate
+            $sudo chmod +x /usr/local/go/bin/goupdate
         fi
     elif [[ $os == "Darwin" ]];then
         if [[ ! -e $HOME/go/bin/goupdate || -z `cat $HOME/go/bin/goupdate|grep '$@'` ]];then
-            cat > $HOME/go/bin/goupdate << 'EOF'
+            $sudo cat > $HOME/go/bin/goupdate << 'EOF'
 #!/bin/zsh
 source <(curl -L https://go-install.netlify.app/install.sh) $@
 EOF
-            chmod +x $HOME/go/bin/goupdate
+            $sudo chmod +x $HOME/go/bin/goupdate
         fi
     fi
 }
