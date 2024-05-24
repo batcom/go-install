@@ -7,6 +7,8 @@
 
 source os-detect.sh
 
+pwd=`pwd`
+
 can_google=1
 
 force_mode=0
@@ -166,14 +168,15 @@ sys_arch(){
 
 install_neovim(){
     curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-$vdis.tar.gz
-    # $sudo rm -rf /opt/nvim
+    $sudo mkdir -p $install_path
     $sudo tar -C $install_path -xzf nvim-$vdis.tar.gz
 }
 
 downloadNerdFonts(){
     if [[ $os == "Linux" ]];then
         mkdir -p ~/.local/share/fonts
-        cd ~/.local/share/fonts && curl -fLO $nerd_font_url
+        cd ~/.local/share/fonts && curl -fLO -o ~/.local/share/fonts/ $nerd_font_url
+        cd $pwd
     elif [[ $os == "Darwin" ]];then
         cd ~/Library/Fonts && curl -fLO $nerd_font_url
     fi
@@ -183,7 +186,7 @@ install_lazygit(){
     LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
     if [[ $os == "Linux" ]];then
         curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_${lazygit_id}.tar.gz"
-        tar -C /usr/local/bin -xzf lazygit.tar.gz lazygit
+        $sudo tar -C /usr/local/bin -xzf lazygit.tar.gz lazygit
     elif [[ $os == "Darwin" ]];then
         brew install lazygit
     fi    
