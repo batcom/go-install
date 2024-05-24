@@ -1,6 +1,6 @@
 #!/bin/bash
-# Author: Jrohy
-# Github: https://github.com/Jrohy/go-install
+# Author: batcom
+# Github: https://github.com/batcom/go-install
 
 # cancel centos alias
 [[ -f /etc/redhat-release ]] && unalias -a
